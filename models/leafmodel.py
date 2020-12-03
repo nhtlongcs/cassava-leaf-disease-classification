@@ -6,6 +6,7 @@ from .extractors import EfficientNetExtractor
 
 class BaseModel(nn.Module):
     def __init__(self, num_classes=5, version=0, freeze_backbone=False):
+        super().__init__()
         self.extractor = EfficientNetExtractor(version)
 
         self.feature_dim = self.extractor.feature_dim
@@ -22,3 +23,4 @@ class BaseModel(nn.Module):
     def forward(self, x):
         x = self.extractor(x)
         x = self.classifier(x)
+        return x

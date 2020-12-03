@@ -26,8 +26,10 @@ class LeafDataset(data.Dataset):
                 tf.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
             ]
         )
+
         self.data_dir = data_dir
         self.data = pd.read_csv(csv_path)
+        # self.data = self.data.loc[:10, :]  # test sample
         self.IMG_SIZE = IMG_SIZE
         self.tf = transforms_train if is_train else transforms_valid
         self.is_train = is_train
@@ -37,7 +39,6 @@ class LeafDataset(data.Dataset):
         path = os.path.join(self.data_dir, path)
         img = Image.open(path).convert("RGB")
         img = self.tf(img)
-        lbl = tf.ToTensor(lbl)
         return img, lbl
 
     def __len__(self):
