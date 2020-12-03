@@ -37,6 +37,7 @@ class LeafDataset(data.Dataset):
         path = os.path.join(self.data_dir, path)
         img = Image.open(path).convert("RGB")
         img = self.tf(img)
+        lbl = tf.ToTensor(lbl)
         return img, lbl
 
     def __len__(self):
