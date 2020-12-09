@@ -1,28 +1,41 @@
-id:                             ViTCosine
+id:                             ViT
 pretrained:                     Null
 model:
     name:                       BaseTimmModel
     args:
-        name:                   vit_base_patch16_224
+    name:                       ['vit_base_patch16_224',
+                                'vit_base_patch16_384',
+                                'vit_base_patch32_384',
+                                'vit_base_resnet26d_224',
+                                'vit_base_resnet50d_224',
+                                'vit_huge_patch16_224',
+                                'vit_huge_patch32_384',
+                                'vit_large_patch16_224',
+                                'vit_large_patch16_384',
+                                'vit_large_patch32_384',
+                                'vit_small_patch16_224',
+                                'vit_small_resnet26d_224',
+                                'vit_small_resnet50d_s3_224']
         num_classes:            5
         freeze_backbone:        False
 optimizer:
-    name:                       SGD
+    name:                       [Adam, SGD]
     args:
         lr:                     0.03 
         momentum:               0.9
         weight_decay:           0
 loss:
-    name:                       FocalLoss
+    name:                       [FocalLoss, CrossEntropyLoss]
     args:                       Null
 metric:
     -   name:                   Accuracy
         args:                   Null
 scheduler:
-    name:                       WarmupCosineSchedule
+    name:                       [StepLR, WarmupCosineSchedule, WarmupLinearSchedule]
     args:
-        warmup_steps:           100
-        t_total:                3000
+        step_size:              15
+        gamma:                  0.2
+        last_epoch:             -1  
 dataset:
     train:
         name:                   LeafDataset
@@ -51,6 +64,6 @@ dataset:
                 shuffle:        True
 
 trainer: 
-    nepochs: 10
+    nepochs: 20
     val_step: 1
     log_step: 1

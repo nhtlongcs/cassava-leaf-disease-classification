@@ -7,6 +7,7 @@ from datasets import *
 from models import *
 from metrics import *
 from dataloaders import *
+from schedulers import *
 
 
 def get_instance(config, **kwargs):
