@@ -55,7 +55,7 @@ class pipeline(pl.LightningModule):
 
     def validation_epoch_end(self, outputs):
         loss = torch.mean(torch.stack([o["loss"] for o in outputs], dim=0))
-        acc = torch.mean(torch.stack([o["acc"] for o in outputs], dim=0))
+        acc = torch.mean(torch.cat([o["acc"] for o in outputs], dim=0))
         out = {"val_loss": loss, "val_acc": acc}
         return {**out, "log": out}
 
@@ -112,7 +112,6 @@ def train(config):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="configs/vit.yaml")
-    parser.add_argument("--gpus", default=None)
     parser.add_argument("--seed", default=SEED)
     parser.add_argument("--debug", default=False)
     parser.add_argument("--save_dir", default="./runs_lightning")
@@ -121,7 +120,6 @@ if __name__ == "__main__":
     seed_everything(seed=args.seed)
     config_path = args.config
     config = yaml.load(open(config_path, "r"), Loader=yaml.Loader)
-    config["gpus"] = args.gpus
     config["debug"] = args.debug
     config["save_dir"] = args.save_dir
     train(config)
