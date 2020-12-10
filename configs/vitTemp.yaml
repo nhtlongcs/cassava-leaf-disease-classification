@@ -1,4 +1,4 @@
-id:                             ViTCosine
+id:                             ViTTempered
 pretrained:                     Null
 model:
     name:                       BaseTimmModel
