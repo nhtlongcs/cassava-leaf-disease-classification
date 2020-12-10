@@ -80,7 +80,8 @@ class pipeline(pl.LightningModule):
         optimizer = get_instance(
             self.config["optimizer"], params=self.model.parameters()
         )
-        return optimizer
+        lr_scheduler = get_instance(config["scheduler"], optimizer=optimizer)
+        return [optimizer], [lr_scheduler]
 
 
 def train(config):
@@ -96,7 +97,7 @@ def train(config):
     )
     trainer = pl.Trainer(
         max_epochs=config["trainer"]["nepochs"],
-        # tpu_cores=8,
+        tpu_cores=(8 if config["use_tpu"] else 0),
         progress_bar_refresh_rate=20,
         gpus=(1 if torch.cuda.is_available() else 0),
         check_val_every_n_epoch=config["trainer"]["val_step"],
@@ -113,6 +114,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="configs/vit.yaml")
     parser.add_argument("--seed", default=SEED)
+    parser.add_argument("--use_tpu", default=False)
     parser.add_argument("--debug", default=False)
     parser.add_argument("--save_dir", default="./runs_lightning")
 
@@ -121,5 +123,6 @@ if __name__ == "__main__":
     config_path = args.config
     config = yaml.load(open(config_path, "r"), Loader=yaml.Loader)
     config["debug"] = args.debug
+    config["use_tpu"] = args.use_tpu
     config["save_dir"] = args.save_dir
     train(config)
