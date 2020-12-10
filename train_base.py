@@ -2,20 +2,21 @@ import sys
 
 sys.path.append("./libs/")
 
-import yaml
-import torch
-import torch.nn as nn
-from torch.utils.data import DataLoader
-from torch.utils import data
-from tqdm import tqdm
-from torchnet import meter
-
-from workers.trainer import Trainer
-from utils.random_seed import set_seed
-from utils.getter import get_instance
-
 import argparse
 import pprint
+
+import torch
+import torch.nn as nn
+import yaml
+from apex import amp
+from apex.parallel import DistributedDataParallel as DDP
+from torch.utils import data
+from torch.utils.data import DataLoader
+from torchnet import meter
+from tqdm import tqdm
+from utils.getter import get_instance
+from utils.random_seed import set_seed
+from workers.trainer import Trainer
 
 
 def train(config):
@@ -78,7 +79,12 @@ def train(config):
     set_seed()
     metric = {mcfg["name"]: get_instance(mcfg) for mcfg in config["metric"]}
 
-    # 6: Create trainer
+    if config["fp16"]:
+        model, optimizer = amp.initialize(
+            models=model, optimizers=optimizer, opt_level=config["fp16_opt_level"]
+        )
+        amp._amp_state.loss_scalers[0]._loss_scale = 2 ** 20
+    # 7: Create trainer
     set_seed()
     trainer = Trainer(
         device=device,
@@ -99,6 +105,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--config")
     parser.add_argument("--gpus", default=None)
+    parser.add_argument("--fp16", default=True)
+    parser.add_argument("--fp16_opt_level", default="O2")
     parser.add_argument("--debug", action="store_true")
 
     args = parser.parse_args()
@@ -107,5 +115,7 @@ if __name__ == "__main__":
     config = yaml.load(open(config_path, "r"), Loader=yaml.Loader)
     config["gpus"] = args.gpus
     config["debug"] = args.debug
+    config["fp16"] = args.fp16 if str(args.fp16).lower() != "false" else False
+    config["fp16_opt_level"] = args.fp16_opt_level
 
     train(config)

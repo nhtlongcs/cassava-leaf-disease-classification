@@ -1,24 +1,20 @@
+import os
+from datetime import datetime
+
+import numpy as np
 import torch
+from apex import amp
+from apex.parallel import DistributedDataParallel as DDP
+from loggers import TensorboardLogger
 from torch import nn, optim
 from torch.utils import data
 from torchnet import meter
 from tqdm import tqdm
-import numpy as np
-import os
-from datetime import datetime
-
-from loggers import TensorboardLogger
-from utils.device import move_to, detach
+from utils.device import detach, move_to
 
 
-class Trainer():
-    def __init__(self, device,
-                 config,
-                 model,
-                 criterion,
-                 optimier,
-                 scheduler,
-                 metric):
+class Trainer:
+    def __init__(self, device, config, model, criterion, optimier, scheduler, metric):
         super(Trainer, self).__init__()
 
         self.config = config
@@ -30,54 +26,55 @@ class Trainer():
         self.metric = metric
 
         # Train ID
-        self.train_id = str(self.config.get('id', 'None'))
-        self.train_id += '-' + \
-            datetime.now().strftime('%Y_%m_%d-%H_%M_%S')
+        self.train_id = str(self.config.get("id", "None"))
+        self.train_id += "-" + datetime.now().strftime("%Y_%m_%d-%H_%M_%S")
 
         # Get arguments
-        self.nepochs = self.config['trainer']['nepochs']
-        self.log_step = self.config['trainer']['log_step']
-        self.val_step = self.config['trainer']['val_step']
-        self.debug = self.config['debug']
+        self.fp16 = self.config["fp16"]
+        self.nepochs = self.config["trainer"]["nepochs"]
+        self.log_step = self.config["trainer"]["log_step"]
+        self.val_step = self.config["trainer"]["val_step"]
+        self.debug = self.config["debug"]
 
         # Instantiate global variables
+        self.max_grad_norm = 1.0
         self.best_loss = np.inf
         self.best_metric = {k: 0.0 for k in self.metric.keys()}
         self.val_loss = list()
         self.val_metric = {k: list() for k in self.metric.keys()}
 
         # Instantiate loggers
-        self.save_dir = os.path.join('runs', self.train_id)
+        self.save_dir = os.path.join("runs", self.train_id)
         self.tsboard = TensorboardLogger(path=self.save_dir)
 
     def save_checkpoint(self, epoch, val_loss, val_metric):
 
         data = {
-            'epoch': epoch,
-            'model_state_dict': self.model.state_dict(),
-            'optimizer_state_dict': self.optimizer.state_dict(),
-            'config': self.config
+            "epoch": epoch,
+            "model_state_dict": self.model.state_dict(),
+            "optimizer_state_dict": self.optimizer.state_dict(),
+            "config": self.config,
         }
 
         if val_loss < self.best_loss:
             print(
-                f'Loss is improved from {self.best_loss: .6f} to {val_loss: .6f}. Saving weights...')
-            torch.save(data, os.path.join(self.save_dir, 'best_loss.pth'))
+                f"Loss is improved from {self.best_loss: .6f} to {val_loss: .6f}. Saving weights..."
+            )
+            torch.save(data, os.path.join(self.save_dir, "best_loss.pth"))
             # Update best_loss
             self.best_loss = val_loss
         else:
-            print(f'Loss is not improved from {self.best_loss:.6f}.')
+            print(f"Loss is not improved from {self.best_loss:.6f}.")
 
         for k in self.metric.keys():
             if val_metric[k] > self.best_metric[k]:
                 print(
-                    f'{k} is improved from {self.best_metric[k]: .6f} to {val_metric[k]: .6f}. Saving weights...')
-                torch.save(data, os.path.join(
-                    self.save_dir, f'best_metric_{k}.pth'))
+                    f"{k} is improved from {self.best_metric[k]: .6f} to {val_metric[k]: .6f}. Saving weights..."
+                )
+                torch.save(data, os.path.join(self.save_dir, f"best_metric_{k}.pth"))
                 self.best_metric[k] = val_metric[k]
             else:
-                print(
-                    f'{k} is not improved from {self.best_metric[k]:.6f}.')
+                print(f"{k} is not improved from {self.best_metric[k]:.6f}.")
 
         # print('Saving current model...')
         # torch.save(data, os.path.join(self.save_dir, 'current.pth'))
@@ -89,7 +86,7 @@ class Trainer():
         for m in self.metric.values():
             m.reset()
         self.model.train()
-        print('Training........')
+        print("Training........")
         progress_bar = tqdm(dataloader)
         for i, (inp, lbl) in enumerate(progress_bar):
             # 1: Load img_inputs and labels
@@ -102,7 +99,18 @@ class Trainer():
             # 4: Calculate the loss
             loss = self.criterion(outs, lbl)
             # 5: Calculate gradients
-            loss.backward()
+            # loss.backward()
+            if self.fp16:
+                with amp.scale_loss(loss, self.optimizer) as scaled_loss:
+                    scaled_loss.backward()
+                torch.nn.utils.clip_grad_norm_(
+                    amp.master_params(self.optimizer), self.max_grad_norm
+                )
+            else:
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(
+                    self.model.parameters(), self.max_grad_norm
+                )
             # 6: Performing backpropagation
             self.optimizer.step()
             with torch.no_grad():
@@ -112,7 +120,8 @@ class Trainer():
 
                 if (i + 1) % self.log_step == 0 or (i + 1) == len(dataloader):
                     self.tsboard.update_loss(
-                        'train', running_loss.value()[0], epoch * len(dataloader) + i)
+                        "train", running_loss.value()[0], epoch * len(dataloader) + i
+                    )
                     running_loss.reset()
 
                 # 8: Update metric
@@ -122,9 +131,9 @@ class Trainer():
                     value = m.calculate(outs, lbl)
                     m.update(value)
 
-        print('+ Training result')
+        print("+ Training result")
         avg_loss = total_loss.value()[0]
-        print('Loss:', avg_loss)
+        print("Loss:", avg_loss)
         for m in self.metric.values():
             m.summary()
 
@@ -135,7 +144,7 @@ class Trainer():
             m.reset()
 
         self.model.eval()
-        print('Evaluating........')
+        print("Evaluating........")
         progress_bar = tqdm(dataloader)
         for i, (inp, lbl) in enumerate(progress_bar):
             # 1: Load inputs and labels
@@ -154,22 +163,23 @@ class Trainer():
                 value = m.calculate(outs, lbl)
                 m.update(value)
 
-        print('+ Evaluation result')
+        print("+ Evaluation result")
         avg_loss = running_loss.value()[0]
-        print('Loss:', avg_loss)
+        print("Loss:", avg_loss)
         self.val_loss.append(avg_loss)
-        self.tsboard.update_loss('val', avg_loss, epoch)
+        self.tsboard.update_loss("val", avg_loss, epoch)
 
         for k in self.metric.keys():
             m = self.metric[k].value()
             self.metric[k].summary()
             self.val_metric[k].append(m)
-            self.tsboard.update_metric('val', k, m, epoch)
+            self.tsboard.update_metric("val", k, m, epoch)
 
     def train(self, train_dataloader, val_dataloader):
+
         for epoch in range(self.nepochs):
-            print('\nEpoch {:>3d}'.format(epoch))
-            print('-----------------------------------')
+            print("\nEpoch {:>3d}".format(epoch))
+            print("-----------------------------------")
 
             # 1: Training phase
             self.train_epoch(epoch=epoch, dataloader=train_dataloader)
@@ -180,7 +190,7 @@ class Trainer():
             if (epoch + 1) % self.val_step == 0:
                 # 2: Evaluating model
                 self.val_epoch(epoch, dataloader=val_dataloader)
-                print('-----------------------------------')
+                print("-----------------------------------")
 
                 # 3: Learning rate scheduling
                 self.scheduler.step(self.val_loss[-1])
