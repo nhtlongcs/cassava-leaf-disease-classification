@@ -129,5 +129,6 @@ dmypy.json
 # data
 data/*
 runs/
+runs_lightning/
 *.pth
 !*.csv
