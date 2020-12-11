@@ -124,6 +124,9 @@ if __name__ == "__main__":
 	parser.add_argument("--fp16", default=True)
 	parser.add_argument("--fp16_opt_level", default="O2")
 	parser.add_argument("--debug", action="store_true")
+
+	parser.add_argument("--optuna_n_trials", default=10)
+
 	args = parser.parse_args()
 	config_path = args.config
 	config = yaml.load(open(config_path, "r"), Loader=yaml.Loader)
@@ -134,7 +137,7 @@ if __name__ == "__main__":
 
 
 	study = optuna.create_study(direction="maximize")
-	study.optimize(Objective(config), n_trials=1)
+	study.optimize(Objective(config), n_trials=int(args.optuna_n_trials))
 	print("Best trial:")
 	trial = study.best_trial
 	print("  Value: ", trial.value)
