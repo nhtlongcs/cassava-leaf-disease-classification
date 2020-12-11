@@ -69,7 +69,6 @@ def train(trial, config):
 
 	# 4: Define Optimizer
 	set_seed()
-	# optimizer = get_instance(config["optimizer"], params=model.parameters())
 	optimizer_name = trial.suggest_categorical("optimizer", ["Adam", "RMSprop", "SGD"])
 	lr = trial.suggest_float("lr", low=0.0001, high=0.01, log=True)
 	optimizer = getattr(torch.optim, optimizer_name)(lr=lr, params=model.parameters()) 
