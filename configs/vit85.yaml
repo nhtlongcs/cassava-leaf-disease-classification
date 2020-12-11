@@ -3,37 +3,23 @@ pretrained:                     Null
 model:
     name:                       BaseTimmModel
     args:
-    name:                       ['vit_base_patch16_224',
-                                'vit_base_patch16_384',
-                                'vit_base_patch32_384',
-                                'vit_base_resnet26d_224',
-                                'vit_base_resnet50d_224',
-                                'vit_huge_patch16_224',
-                                'vit_huge_patch32_384',
-                                'vit_large_patch16_224',
-                                'vit_large_patch16_384',
-                                'vit_large_patch32_384',
-                                'vit_small_patch16_224',
-                                'vit_small_resnet26d_224',
-                                'vit_small_resnet50d_s3_224']
+        name:                   vit_base_patch16_224
         num_classes:            5
         freeze_backbone:        False
 optimizer:
-    name:                       [Adam, SGD]
+    name:                       Adam
     args:
-        lr:                     0.03 
-        momentum:               0.9
-        weight_decay:           0
+        lr:                     0.0001
 loss:
-    name:                       [FocalLoss, CrossEntropyLoss,BiTemperedLoss]
+    name:                       FocalLoss
     args:                       Null
 metric:
     -   name:                   Accuracy
         args:                   Null
 scheduler:
-    name:                       [StepLR, WarmupCosineSchedule, WarmupLinearSchedule]
+    name:                       StepLR
     args:
-        step_size:              15
+        step_size:              2
         gamma:                  0.2
         last_epoch:             -1  
 dataset:
@@ -47,7 +33,7 @@ dataset:
         loader:
             name: DataLoader
             args:
-                batch_size:     64
+                batch_size:     128
                 shuffle:        True
                 drop_last:      True 
     val:
@@ -60,10 +46,10 @@ dataset:
         loader:
             name: DataLoader
             args:
-                batch_size:     64
+                batch_size:     32
                 shuffle:        True
 
 trainer: 
-    nepochs: 20
+    nepochs: 10
     val_step: 1
     log_step: 1

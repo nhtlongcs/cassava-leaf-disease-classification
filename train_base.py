@@ -8,8 +8,6 @@ import pprint
 import torch
 import torch.nn as nn
 import yaml
-from apex import amp
-from apex.parallel import DistributedDataParallel as DDP
 from torch.utils import data
 from torch.utils.data import DataLoader
 from torchnet import meter
@@ -79,11 +77,6 @@ def train(config):
     set_seed()
     metric = {mcfg["name"]: get_instance(mcfg) for mcfg in config["metric"]}
 
-    if config["fp16"]:
-        model, optimizer = amp.initialize(
-            models=model, optimizers=optimizer, opt_level=config["fp16_opt_level"]
-        )
-        amp._amp_state.loss_scalers[0]._loss_scale = 2 ** 20
     # 7: Create trainer
     set_seed()
     trainer = Trainer(
