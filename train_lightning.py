@@ -114,7 +114,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="configs/vit.yaml")
     parser.add_argument("--seed", default=SEED)
-    parser.add_argument("--use_tpu", default=False)
+    parser.add_argument("--use_tpu", action="store_true", default=False)
     parser.add_argument("--debug", default=False)
     parser.add_argument("--save_dir", default="./runs_lightning")
 
