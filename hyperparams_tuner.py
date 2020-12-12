@@ -153,4 +153,5 @@ if __name__ == "__main__":
 	# Export key visualizations
 	param_importances = optuna.visualization.plot_param_importances(study)
 	optimization_history = optuna.visualization.plot_optimization_history(study)
-	
+	param_importances.show()
+	optimization_history.show()
