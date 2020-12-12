@@ -80,7 +80,7 @@ def train(trial, config):
 
 	# 4: Define Optimizer
 	set_seed()
-	optimizer_name = "Adam"
+	# optimizer_name = "Adam"
 	optimizer_name = trial.suggest_categorical("optimizer", ["Adam", "RMSprop", "SGD"])
 	lr = trial.suggest_float("lr", low=0.0001, high=0.01, log=True)
 	weight_decay = trial.suggest_float("weight_decay", low=0, high=0.00001)
