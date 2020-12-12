@@ -126,19 +126,19 @@ class Objective(object):
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
-    parser.add_argument("--config")
-    parser.add_argument("--gpus", default=None)
-    parser.add_argument("--fp16", action="store_true", default=False)
-    parser.add_argument("--fp16_opt_level", default="O2")
-    parser.add_argument("--debug", action="store_true")
+	parser.add_argument("--config")
+	parser.add_argument("--gpus", default=None)
+	parser.add_argument("--fp16", action="store_true", default=False)
+	parser.add_argument("--fp16_opt_level", default="O2")
+	parser.add_argument("--debug", action="store_true")
 	parser.add_argument("--optuna_n_trials", default=1)
 	args = parser.parse_args()
 	config_path = args.config
-    config = yaml.load(open(config_path, "r"), Loader=yaml.Loader)
-    config["gpus"] = args.gpus
-    config["debug"] = args.debug
-    config["fp16"] = args.fp16
-    config["fp16_opt_level"] = args.fp16_opt_level
+	config = yaml.load(open(config_path, "r"), Loader=yaml.Loader)
+	config["gpus"] = args.gpus
+	config["debug"] = args.debug
+	config["fp16"] = args.fp16
+	config["fp16_opt_level"] = args.fp16_opt_level
 
 
 	study = optuna.create_study(direction="maximize", study_name="optuna_v0")
