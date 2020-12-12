@@ -25,7 +25,7 @@ optimizer:
         momentum:               0.9
         weight_decay:           0
 loss:
-    name:                       [FocalLoss, CrossEntropyLoss]
+    name:                       [FocalLoss, CrossEntropyLoss,BiTemperedLoss]
     args:                       Null
 metric:
     -   name:                   Accuracy

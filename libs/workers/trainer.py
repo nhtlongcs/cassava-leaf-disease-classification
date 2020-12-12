@@ -3,14 +3,13 @@ from datetime import datetime
 
 import numpy as np
 import torch
-from apex import amp
-from apex.parallel import DistributedDataParallel as DDP
 from loggers import TensorboardLogger
 from torch import nn, optim
 from torch.utils import data
 from torchnet import meter
 from tqdm import tqdm
 from utils.device import detach, move_to
+from torch.cuda.amp import GradScaler, autocast
 
 
 class Trainer:
@@ -24,6 +23,7 @@ class Trainer:
         self.optimizer = optimier
         self.scheduler = scheduler
         self.metric = metric
+        self.scaler = GradScaler()
 
         # Train ID
         self.train_id = str(self.config.get("id", "None"))
@@ -94,25 +94,18 @@ class Trainer:
             lbl = move_to(lbl, self.device)
             # 2: Clear gradients from previous iteration
             self.optimizer.zero_grad()
-            # 3: Get network outputs
-            outs = self.model(inp)
-            # 4: Calculate the loss
-            loss = self.criterion(outs, lbl)
+            with autocast(enabled=self.fp16):
+                # 3: Get network outputs
+                outs = self.model(inp)
+                # 4: Calculate the loss
+                loss = self.criterion(outs, lbl)
             # 5: Calculate gradients
-            # loss.backward()
-            if self.fp16:
-                with amp.scale_loss(loss, self.optimizer) as scaled_loss:
-                    scaled_loss.backward()
-                torch.nn.utils.clip_grad_norm_(
-                    amp.master_params(self.optimizer), self.max_grad_norm
-                )
-            else:
-                loss.backward()
-                torch.nn.utils.clip_grad_norm_(
-                    self.model.parameters(), self.max_grad_norm
-                )
+            self.scaler.scale(loss).backward()
+            self.scaler.unscale_(self.optimizer)
+            torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.max_grad_norm)
+            self.scaler.step(self.optimizer)
+            self.scaler.update()
             # 6: Performing backpropagation
-            self.optimizer.step()
             with torch.no_grad():
                 # 7: Update loss
                 running_loss.add(loss.item())
@@ -150,6 +143,7 @@ class Trainer:
             # 1: Load inputs and labels
             inp = move_to(inp, self.device)
             lbl = move_to(lbl, self.device)
+
             # 2: Get network outputs
             outs = self.model(inp)
             # 3: Calculate the loss
@@ -189,7 +183,8 @@ class Trainer:
             # 2: Evalutation phase
             if (epoch + 1) % self.val_step == 0:
                 # 2: Evaluating model
-                self.val_epoch(epoch, dataloader=val_dataloader)
+                with autocast(enabled=self.fp16):
+                    self.val_epoch(epoch, dataloader=val_dataloader)
                 print("-----------------------------------")
 
                 # 3: Learning rate scheduling

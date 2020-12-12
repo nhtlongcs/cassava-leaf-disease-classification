@@ -24,7 +24,7 @@ scheduler:
         last_epoch:             -1  
 dataset:
     train:
-        name:                   LeafDatasetAdvance
+        name:                   LeafDataset
         args:
             data_dir:           data/train_images/         
             csv_path:           lists/train.csv
@@ -37,7 +37,7 @@ dataset:
                 shuffle:        True
                 drop_last:      True 
     val:
-        name:                   LeafDatasetAdvance
+        name:                   LeafDataset
         args:
             data_dir:           data/train_images/         
             csv_path:           lists/val.csv
@@ -50,6 +50,6 @@ dataset:
                 shuffle:        True
 
 trainer: 
-    nepochs: 1
+    nepochs: 10
     val_step: 1
     log_step: 1
