@@ -140,7 +140,7 @@ if __name__ == "__main__":
 	config["fp16"] = args.fp16
 	config["fp16_opt_level"] = args.fp16_opt_level
 
-
+	# Create a study
 	study = optuna.create_study(direction="maximize", study_name="optuna_v0")
 	study.optimize(Objective(config), n_trials=int(args.optuna_n_trials))
 	print("Best trial:")
@@ -149,3 +149,10 @@ if __name__ == "__main__":
 	print("  Params: ")
 	for key, value in trial.params.items():
 		print("    {}: {}".format(key, value))
+
+	# Export key visualizations
+	param_importances = optuna.visualization.plot_param_importances(study)
+	param_importances.write_image("optuna_visualizations/param_importances.png")
+
+	optimization_history = optuna.visualization.plot_optimization_history(study)
+	param_importances.write_image("optuna_visualizations/optimization_history.png")
