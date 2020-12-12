@@ -20,6 +20,15 @@ from workers.trainer import Trainer
 
 import optuna
 from torch.optim import SGD, Adam, RMSprop
+from torch.optim.lr_scheduler import ReduceLROnPlateau, StepLR
+from torch.utils.data import DataLoader
+
+from losses import *
+from datasets import *
+from models import *
+from metrics import *
+from dataloaders import *
+from schedulers import *
 
 def train(trial, config):
 	assert config is not None, "Do not have config file!"
@@ -66,19 +75,25 @@ def train(trial, config):
 	# 3: Define loss
 	set_seed()
 	criterion = get_instance(config["loss"]).to(device)
+	# criterion_name = trial.suggest_categorical("criterion", ["FocalLoss", "CrossEntropyLoss"])
+	# criterion = globals()[criterion_name]()
 
 	# 4: Define Optimizer
 	set_seed()
+	optimizer_name = "Adam"
 	optimizer_name = trial.suggest_categorical("optimizer", ["Adam", "RMSprop", "SGD"])
 	lr = trial.suggest_float("lr", low=0.0001, high=0.01, log=True)
-	optimizer = getattr(torch.optim, optimizer_name)(lr=lr, params=model.parameters()) 
-
+	weight_decay = trial.suggest_float("weight_decay", low=0, high=0.00001)
+	optimizer = getattr(torch.optim, optimizer_name)(lr=lr, weight_decay=weight_decay, params=model.parameters()) 
 	if pretrained is not None:
 		optimizer.load_state_dict(pretrained["optimizer_state_dict"])
 
 	# 5: Define Scheduler
 	set_seed()
-	scheduler = get_instance(config["scheduler"], optimizer=optimizer)
+	scheduler_name = "StepLR"
+	step_size = trial.suggest_int("step_size", low=1, high=5)
+	gamma = trial.suggest_float("gamma", low=0.1, high=0.5)
+	scheduler = globals()[scheduler_name](optimizer=optimizer, step_size=step_size, gamma=gamma, last_epoch=-1)
 
 	# 6: Define metrics
 	set_seed()
@@ -125,7 +140,7 @@ if __name__ == "__main__":
 	parser.add_argument("--fp16_opt_level", default="O2")
 	parser.add_argument("--debug", action="store_true")
 
-	parser.add_argument("--optuna_n_trials", default=10)
+	parser.add_argument("--optuna_n_trials", default=1)
 
 	args = parser.parse_args()
 	config_path = args.config
@@ -136,7 +151,7 @@ if __name__ == "__main__":
 	config["fp16_opt_level"] = args.fp16_opt_level
 
 
-	study = optuna.create_study(direction="maximize")
+	study = optuna.create_study(direction="maximize", study_name="optuna_v0")
 	study.optimize(Objective(config), n_trials=int(args.optuna_n_trials))
 	print("Best trial:")
 	trial = study.best_trial

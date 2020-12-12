@@ -9,7 +9,7 @@ model:
 optimizer:
     name:                       SGD
     args:
-        lr:                     0.03 
+        lr:                     0.003 
         momentum:               0.9
         weight_decay:           0
 loss:
@@ -47,10 +47,10 @@ dataset:
         loader:
             name: DataLoader
             args:
-                batch_size:     128
+                batch_size:     32
                 shuffle:        True
 
 trainer: 
-    nepochs: 10
+    nepochs: 1
     val_step: 1
     log_step: 1

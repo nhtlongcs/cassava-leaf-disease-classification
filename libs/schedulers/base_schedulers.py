@@ -1,6 +1,4 @@
-
 from torch.optim.lr_scheduler import LambdaLR
-
 
 class WarmupCosineSchedule(LambdaLR):
     """ Linear warmup and then cosine decay.
