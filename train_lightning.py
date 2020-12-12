@@ -93,12 +93,13 @@ def train(config):
     checkpoint_callback = ModelCheckpoint(
         filepath=cp_dir + "/{epoch}-{train_loss:.3f}-{val_acc:.2f}",
         monitor="val_acc",
+        verbose=True,
         save_top_k=7,
     )
     trainer = pl.Trainer(
         max_epochs=config["trainer"]["nepochs"],
         tpu_cores=(8 if config["use_tpu"] else 0),
-        progress_bar_refresh_rate=20,
+        progress_bar_refresh_rate=2,
         gpus=(1 if torch.cuda.is_available() else 0),
         check_val_every_n_epoch=config["trainer"]["val_step"],
         checkpoint_callback=checkpoint_callback,
