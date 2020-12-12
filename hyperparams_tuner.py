@@ -152,7 +152,5 @@ if __name__ == "__main__":
 
 	# Export key visualizations
 	param_importances = optuna.visualization.plot_param_importances(study)
-	param_importances.write_image("optuna_visualizations/param_importances.png")
-
 	optimization_history = optuna.visualization.plot_optimization_history(study)
-	param_importances.write_image("optuna_visualizations/optimization_history.png")
+	
