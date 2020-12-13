@@ -131,7 +131,7 @@ class Trainer:
 
         vprint("+ Training result", self.verbose)
         avg_loss = total_loss.value()[0]
-        vprint("Loss:", avg_loss, self.verbose)
+        vprint(("Loss:", avg_loss), self.verbose)
         for m in self.metric.values():
             m.summary()
 
@@ -164,7 +164,7 @@ class Trainer:
 
         vprint("+ Evaluation result", self.verbose)
         avg_loss = running_loss.value()[0]
-        vprint("Loss:", avg_loss, self.verbose)
+        vprint(("Loss:", avg_loss), self.verbose)
         self.val_loss.append(avg_loss)
         self.tsboard.update_loss("val", avg_loss, epoch)
 

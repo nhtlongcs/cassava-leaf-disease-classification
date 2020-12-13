@@ -101,7 +101,7 @@ class LeafDatasetAdvance(data.Dataset):
 
         self.data_dir = data_dir
         self.data = pd.read_csv(csv_path)
-        # self.data = self.data.loc[:10, :]  # test sample
+        self.data = self.data.loc[:10, :]  # test sample
         self.IMG_SIZE = IMG_SIZE
         self.tf = transforms_train if is_train else transforms_valid
         self.is_train = is_train
