@@ -93,7 +93,7 @@ def train(config):
     checkpoint_callback = ModelCheckpoint(
         filepath=cp_dir + "/{epoch}-{train_loss:.3f}-{val_acc:.2f}",
         monitor="val_acc",
-        verbose=True,
+        verbose=config["verbose"],
         save_top_k=7,
     )
     trainer = pl.Trainer(
@@ -118,6 +118,7 @@ if __name__ == "__main__":
     parser.add_argument("--use_tpu", action="store_true", default=False)
     parser.add_argument("--debug", default=False)
     parser.add_argument("--save_dir", default="./runs_lightning")
+    parser.add_argument("--verbose", action="store_true", default=False)
 
     args = parser.parse_args()
     seed_everything(seed=args.seed)
@@ -126,4 +127,5 @@ if __name__ == "__main__":
     config["debug"] = args.debug
     config["use_tpu"] = args.use_tpu
     config["save_dir"] = args.save_dir
+    config["verbose"] = args.verbose
     train(config)
