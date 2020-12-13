@@ -132,6 +132,7 @@ if __name__ == "__main__":
 	parser.add_argument("--fp16_opt_level", default="O2")
 	parser.add_argument("--debug", action="store_true")
 	parser.add_argument("--optuna_n_trials", default=1)
+	parser.add_argument("--verbose", action="store_true", default=False)
 	args = parser.parse_args()
 	config_path = args.config
 	config = yaml.load(open(config_path, "r"), Loader=yaml.Loader)
@@ -139,6 +140,7 @@ if __name__ == "__main__":
 	config["debug"] = args.debug
 	config["fp16"] = args.fp16
 	config["fp16_opt_level"] = args.fp16_opt_level
+	config["verbose"] = args.verbose
 
 	# Create a study
 	study = optuna.create_study(direction="maximize", study_name="optuna_v0")
@@ -150,5 +152,6 @@ if __name__ == "__main__":
 	for key, value in trial.params.items():
 		print("    {}: {}".format(key, value))
 	
+	# Save study
 	import joblib
 	joblib.dump(study, 'vit_optuna.pkl')
