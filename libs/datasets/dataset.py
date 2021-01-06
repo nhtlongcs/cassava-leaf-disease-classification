@@ -86,7 +86,7 @@ class LeafDatasetAdvance(data.Dataset):
 
         transforms_valid = Compose(
             [
-                CenterCrop(IMG_SIZE, IMG_SIZE, p=1.0),
+                # CenterCrop(IMG_SIZE, IMG_SIZE, p=1.0),
                 Resize(IMG_SIZE, IMG_SIZE),
                 Normalize(
                     mean=[0.485, 0.456, 0.406],
