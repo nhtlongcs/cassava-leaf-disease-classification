@@ -25,6 +25,9 @@ scheduler:
         gamma:                  0.2
         last_epoch:             -1
 dataset:
+    num_folds:                  2
+    folds_train_dir:            lists/folds/train/
+    folds_test_dir:             lists/folds/val/
     train:
         name:                   LeafDataset
         args:
@@ -35,7 +38,7 @@ dataset:
         loader:
             name: DataLoader
             args:
-                batch_size:     4
+                batch_size:     2
                 shuffle:        True
                 drop_last:      True 
     val:
@@ -48,7 +51,7 @@ dataset:
         loader:
             name: DataLoader
             args:
-                batch_size:     4
+                batch_size:     2
                 shuffle:        True
 
 trainer: 

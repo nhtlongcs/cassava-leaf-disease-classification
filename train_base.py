@@ -1,16 +1,18 @@
+import pdb
 import sys
 
 sys.path.append("./libs/")
 
 import argparse
 import pprint
-
+import os
 import torch
 import torch.nn as nn
 import yaml
 from torch.utils import data
 from torch.utils.data import DataLoader
-from torchnet import meter
+
+# from torchnet import meter
 from tqdm import tqdm
 from utils.getter import get_instance
 from utils.random_seed import set_seed
@@ -93,6 +95,48 @@ def train(config):
     set_seed()
     trainer.train(train_dataloader=train_dataloader, val_dataloader=val_dataloader)
 
+    # 8: Delete unused variable
+    del (
+        optimizer,
+        model,
+        train_dataloader,
+        val_dataloader,
+        train_dataset,
+        val_dataset,
+        trainer,
+        metric,
+        pretrained,
+    )
+
+
+def train_folds(config):
+    assert config["dataset"]["num_folds"] != 0, "Num folds can not equal with zero"
+
+    num_folds = config["dataset"]["num_folds"]
+    folds_train_dir = config["dataset"]["folds_train_dir"]
+    folds_test_dir = config["dataset"]["folds_test_dir"]
+
+    folds_train_ls = [
+        os.path.join(folds_train_dir, x) for x in os.listdir(folds_train_dir)
+    ]
+    folds_test_ls = [
+        os.path.join(folds_test_dir, x) for x in os.listdir(folds_test_dir)
+    ]
+    folds_train_ls.sort(), folds_test_ls.sort()
+
+    assert len(folds_train_ls) == len(folds_test_ls), "Folds are not match"
+    id = str(config.get("id", "None"))
+
+    for idx, paths in enumerate(
+        zip(folds_train_ls[:num_folds], folds_test_ls[:num_folds])
+    ):
+        config["id"] = id + "_fold{}".format(idx)
+        (
+            config["dataset"]["train"]["args"]["csv_path"],
+            config["dataset"]["val"]["args"]["csv_path"],
+        ) = paths
+        train(config)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -111,4 +155,7 @@ if __name__ == "__main__":
     config["fp16"] = args.fp16
     config["fp16_opt_level"] = args.fp16_opt_level
 
-    train(config)
+    if config["dataset"]["num_folds"] is not None:
+        train_folds(config)
+    else:
+        train(config)
