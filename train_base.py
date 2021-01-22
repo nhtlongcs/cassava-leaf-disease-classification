@@ -130,7 +130,8 @@ def train_folds(config):
     for idx, paths in enumerate(
         zip(folds_train_ls[:num_folds], folds_test_ls[:num_folds])
     ):
-        config["id"] = id + "_fold{}".format(idx)
+        # config["id"] = id + "_fold{}".format(idx)
+        config["id"] = id + "/checkpoint_fold{}".format(idx)
         (
             config["dataset"]["train"]["args"]["csv_path"],
             config["dataset"]["val"]["args"]["csv_path"],
