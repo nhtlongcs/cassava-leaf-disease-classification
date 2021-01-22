@@ -10,6 +10,7 @@ from torchnet import meter
 from tqdm import tqdm
 from utils.device import detach, move_to
 from torch.cuda.amp import GradScaler, autocast
+from utils.utils import vprint
 
 
 class Trainer:
@@ -35,7 +36,7 @@ class Trainer:
         self.log_step = self.config["trainer"]["log_step"]
         self.val_step = self.config["trainer"]["val_step"]
         self.debug = self.config["debug"]
-
+        self.verbose = self.config["verbose"]
         # Instantiate global variables
         self.max_grad_norm = 1.0
         self.best_loss = np.inf
@@ -57,26 +58,30 @@ class Trainer:
         }
 
         if val_loss < self.best_loss:
-            print(
-                f"Loss is improved from {self.best_loss: .6f} to {val_loss: .6f}. Saving weights..."
+            vprint(
+                f"Loss is improved from {self.best_loss: .6f} to {val_loss: .6f}. Saving weights...",
+                self.verbose,
             )
             torch.save(data, os.path.join(self.save_dir, "best_loss.pth"))
             # Update best_loss
             self.best_loss = val_loss
         else:
-            print(f"Loss is not improved from {self.best_loss:.6f}.")
+            vprint(f"Loss is not improved from {self.best_loss:.6f}.", self.verbose)
 
         for k in self.metric.keys():
             if val_metric[k] > self.best_metric[k]:
-                print(
-                    f"{k} is improved from {self.best_metric[k]: .6f} to {val_metric[k]: .6f}. Saving weights..."
+                vprint(
+                    f"{k} is improved from {self.best_metric[k]: .6f} to {val_metric[k]: .6f}. Saving weights...",
+                    self.verbose,
                 )
                 torch.save(data, os.path.join(self.save_dir, f"best_metric_{k}.pth"))
                 self.best_metric[k] = val_metric[k]
             else:
-                print(f"{k} is not improved from {self.best_metric[k]:.6f}.")
+                vprint(
+                    f"{k} is not improved from {self.best_metric[k]:.6f}.", self.verbose
+                )
 
-        # print('Saving current model...')
+        # vprint('Saving current model...',self.verbose)
         # torch.save(data, os.path.join(self.save_dir, 'current.pth'))
 
     def train_epoch(self, epoch, dataloader):
@@ -86,8 +91,8 @@ class Trainer:
         for m in self.metric.values():
             m.reset()
         self.model.train()
-        print("Training........")
-        progress_bar = tqdm(dataloader)
+        vprint("Training........", self.verbose)
+        progress_bar = tqdm(dataloader) if self.verbose else dataloader
         for i, (inp, lbl) in enumerate(progress_bar):
             # 1: Load img_inputs and labels
             inp = move_to(inp, self.device)
@@ -124,9 +129,9 @@ class Trainer:
                     value = m.calculate(outs, lbl)
                     m.update(value)
 
-        print("+ Training result")
+        vprint("+ Training result", self.verbose)
         avg_loss = total_loss.value()[0]
-        print("Loss:", avg_loss)
+        vprint(("Loss:", avg_loss), self.verbose)
         for m in self.metric.values():
             m.summary()
 
@@ -137,8 +142,8 @@ class Trainer:
             m.reset()
 
         self.model.eval()
-        print("Evaluating........")
-        progress_bar = tqdm(dataloader)
+        vprint("Evaluating........", self.verbose)
+        progress_bar = tqdm(dataloader) if self.verbose else dataloader
         for i, (inp, lbl) in enumerate(progress_bar):
             # 1: Load inputs and labels
             inp = move_to(inp, self.device)
@@ -157,9 +162,9 @@ class Trainer:
                 value = m.calculate(outs, lbl)
                 m.update(value)
 
-        print("+ Evaluation result")
+        vprint("+ Evaluation result", self.verbose)
         avg_loss = running_loss.value()[0]
-        print("Loss:", avg_loss)
+        vprint(("Loss:", avg_loss), self.verbose)
         self.val_loss.append(avg_loss)
         self.tsboard.update_loss("val", avg_loss, epoch)
 
@@ -172,20 +177,20 @@ class Trainer:
     def train(self, train_dataloader, val_dataloader):
 
         for epoch in range(self.nepochs):
-            print("\nEpoch {:>3d}".format(epoch))
-            print("-----------------------------------")
+            vprint("\nEpoch {:>3d}".format(epoch), self.verbose)
+            vprint("-----------------------------------", self.verbose)
 
             # 1: Training phase
             self.train_epoch(epoch=epoch, dataloader=train_dataloader)
 
-            print()
+            # vprint(,self.verbose)
 
             # 2: Evalutation phase
             if (epoch + 1) % self.val_step == 0:
                 # 2: Evaluating model
                 with autocast(enabled=self.fp16):
                     self.val_epoch(epoch, dataloader=val_dataloader)
-                print("-----------------------------------")
+                vprint("-----------------------------------", self.verbose)
 
                 # 3: Learning rate scheduling
                 self.scheduler.step(self.val_loss[-1])

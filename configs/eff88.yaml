@@ -1,9 +1,9 @@
-id:                             ViT
+id:                             
 pretrained:                     Null
 model:
-    name:                       BaseTimmModel
+    name:                       BaseModel
     args:
-        name:                   vit_base_patch16_224
+        version:                4
         num_classes:            5
         freeze_backbone:        False
 optimizer:
@@ -19,7 +19,7 @@ metric:
 scheduler:
     name:                       StepLR
     args:
-        step_size:              2
+        step_size:              3
         gamma:                  0.2
         last_epoch:             -1  
 dataset:
@@ -28,28 +28,28 @@ dataset:
         args:
             data_dir:           data/train_images/         
             csv_path:           lists/train.csv
-            IMG_SIZE:           224
+            IMG_SIZE:           512
             is_train:           True  
         loader:
             name: DataLoader
             args:
-                batch_size:     4
+                batch_size:     16
                 shuffle:        True
-                drop_last:      True 
+                drop_last:      False 
     val:
         name:                   LeafDatasetAdvance
         args:
             data_dir:           data/train_images/         
             csv_path:           lists/val.csv
-            IMG_SIZE:           224
+            IMG_SIZE:           512
             is_train:           False  
         loader:
             name: DataLoader
             args:
-                batch_size:     4
+                batch_size:     16
                 shuffle:        True
 
 trainer: 
-    nepochs: 1
+    nepochs: 10
     val_step: 1
     log_step: 1

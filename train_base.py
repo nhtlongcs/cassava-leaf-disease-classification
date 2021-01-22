@@ -145,6 +145,7 @@ if __name__ == "__main__":
     parser.add_argument("--fp16", action="store_true", default=False)
     parser.add_argument("--fp16_opt_level", default="O2")
     parser.add_argument("--debug", action="store_true")
+    parser.add_argument("--verbose", action="store_true", default=False)
 
     args = parser.parse_args()
 
@@ -154,6 +155,7 @@ if __name__ == "__main__":
     config["debug"] = args.debug
     config["fp16"] = args.fp16
     config["fp16_opt_level"] = args.fp16_opt_level
+    config["verbose"] = args.verbose
 
     if config["dataset"]["num_folds"] is not None:
         train_folds(config)
