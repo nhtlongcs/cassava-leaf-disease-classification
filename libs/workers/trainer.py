@@ -37,7 +37,7 @@ class Trainer:
         self.log_step = self.config["trainer"]["log_step"]
         self.val_step = self.config["trainer"]["val_step"]
         self.debug = self.config["debug"]
-        self.tta_times = self.config["TTA_times"]
+        # self.tta_times = self.config["TTA_times"]
         self.eval_models = []
         self.verbose = self.config["verbose"]
         # Instantiate global variables
