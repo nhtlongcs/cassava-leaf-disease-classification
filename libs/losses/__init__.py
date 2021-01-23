@@ -4,6 +4,7 @@ from .classification.crossentropy import (
     CrossEntropyLoss,
 )
 from .classification.focalloss import FocalLoss
+from .classification.taylorloss import TaylorCrossEntropyLoss
 from .classification.bi_tempered_loss import BiTemperedLoss
 from .segmentation.diceloss import DiceLoss
 from .mixedloss import MixedLoss

@@ -13,7 +13,7 @@ optimizer:
         lr:                     0.01
         momentum:               0.9
 loss:
-    name:                       FocalLoss
+    name:                       TaylorCrossEntropyLoss
     args:                       Null
 metric:
     -   name:                   Accuracy
