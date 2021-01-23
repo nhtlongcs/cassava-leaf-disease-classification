@@ -11,6 +11,7 @@ from tqdm import tqdm
 from utils.device import detach, move_to
 from torch.cuda.amp import GradScaler, autocast
 from utils.utils import vprint
+from optimizers import SAM
 
 
 class Trainer:
@@ -108,7 +109,10 @@ class Trainer:
             self.scaler.scale(loss).backward()
             self.scaler.unscale_(self.optimizer)
             torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.max_grad_norm)
-            self.scaler.step(self.optimizer, step=epoch)
+            if isinstance(self.optimizer, SAM):
+                self.scaler.step(self.optimizer, step=epoch)
+            else:
+                self.scaler.step(self.optimizer)
             self.scaler.update()
             # 6: Performing backpropagation
             with torch.no_grad():
