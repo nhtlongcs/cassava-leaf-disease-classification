@@ -55,6 +55,7 @@ dataset:
                 shuffle:        True
 
 trainer: 
+    TTA_times: 5
     nepochs: 10
     val_step: 1
     log_step: 1

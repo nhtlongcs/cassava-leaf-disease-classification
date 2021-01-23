@@ -15,14 +15,14 @@ from optimizers import SAM
 
 
 class Trainer:
-    def __init__(self, device, config, model, criterion, optimier, scheduler, metric):
+    def __init__(self, device, config, model, criterion, optimizer, scheduler, metric):
         super(Trainer, self).__init__()
 
         self.config = config
         self.device = device
         self.model = model
         self.criterion = criterion
-        self.optimizer = optimier
+        self.optimizer = optimizer
         self.scheduler = scheduler
         self.metric = metric
         self.scaler = GradScaler()
@@ -37,6 +37,8 @@ class Trainer:
         self.log_step = self.config["trainer"]["log_step"]
         self.val_step = self.config["trainer"]["val_step"]
         self.debug = self.config["debug"]
+        self.tta_times = self.config["TTA_times"]
+        self.eval_models = []
         self.verbose = self.config["verbose"]
         # Instantiate global variables
         self.max_grad_norm = 1.0
