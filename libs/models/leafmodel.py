@@ -42,7 +42,11 @@ class BaseTimmModel(nn.Module):
     ):
         super().__init__()
         self.model = timm.create_model(name, pretrained=from_pretrained)
-        self.model.head = nn.Linear(self.model.head.in_features, num_classes)
+        # damn ...
+        try:
+            self.model.head = nn.Linear(self.model.head.in_features, num_classes)
+        except:
+            self.model.fc = nn.Linear(self.model.fc.in_features, num_classes)
 
     def forward(self, x):
         x = self.model(x)
