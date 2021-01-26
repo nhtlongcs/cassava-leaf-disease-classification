@@ -43,7 +43,7 @@ class LeafDataset(data.Dataset):
         self.is_train = is_train
 
     def __getitem__(self, index):
-        path, lbl = self.data.values[index]
+        path, lbl = self.data.image_id.values[index], self.data.label.values[index]
         path = os.path.join(self.data_dir, path)
         img = Image.open(path).convert("RGB")
         img = self.tf(img)
@@ -107,7 +107,7 @@ class LeafDatasetAdvance(data.Dataset):
         self.is_train = is_train
 
     def __getitem__(self, index):
-        path, lbl = self.data.values[index]
+        path, lbl = self.data.image_id.values[index], self.data.label.values[index]
         path = os.path.join(self.data_dir, path)
         img = cv2.imread(path)[:, :, ::-1]
         img = self.tf(image=img)["image"]
