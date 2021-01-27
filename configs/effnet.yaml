@@ -24,7 +24,7 @@ scheduler:
         gamma:                  0.2
         last_epoch:             -1  
 dataset:
-    num_folds:                  
+    num_folds:                  5
     folds_train_dir:            lists/folds/train/
     folds_test_dir:             lists/folds/val/
     train:
