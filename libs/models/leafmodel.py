@@ -11,7 +11,7 @@ class BaseModel(nn.Module):
         self, num_classes=5, version=0, freeze_backbone=False, from_pretrained=True
     ):
         super().__init__()
-        self.extractor = EfficientNetExtractor(version, from_pretrained=False)
+        self.extractor = EfficientNetExtractor(version, from_pretrained=from_pretrained)
 
         self.feature_dim = self.extractor.feature_dim
 
