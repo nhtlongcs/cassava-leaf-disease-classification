@@ -29,7 +29,7 @@ class Trainer:
 
         # Train ID
         self.train_id = str(self.config.get("id", "None"))
-        self.train_id += "-" + datetime.now().strftime("%Y_%m_%d-%H_%M_%S")
+        # self.train_id += "-" + datetime.now().strftime("%Y_%m_%d-%H_%M_%S")
 
         # Get arguments
         self.fp16 = self.config["fp16"]
