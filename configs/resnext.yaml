@@ -1,4 +1,4 @@
-id:                             effnetSAM
+id:                             resnextTaylor
 pretrained:                     Null
 model:
     name:                       BaseTimmModel
