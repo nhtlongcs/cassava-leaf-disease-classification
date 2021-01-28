@@ -6,7 +6,7 @@ model:
         name:                   resnext50_32x4d
         num_classes:            5
         freeze_backbone:        False
-        from_pretrained:        False 
+        from_pretrained:        True 
 
 optimizer:
     name:                       Adam
