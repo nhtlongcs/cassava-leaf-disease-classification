@@ -38,7 +38,7 @@ dataset:
         loader:
             name: DataLoader
             args:
-                batch_size:     2
+                batch_size:     32
                 shuffle:        True
                 drop_last:      True 
     val:
@@ -51,7 +51,7 @@ dataset:
         loader:
             name: DataLoader
             args:
-                batch_size:     2
+                batch_size:     32
                 shuffle:        True
 
 trainer: 
