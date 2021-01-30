@@ -3,6 +3,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+assert timm.__version__ == "0.3.2"
+
 from .extractors import EfficientNetExtractor
 
 
@@ -42,6 +44,36 @@ class BaseTimmModel(nn.Module):
     ):
         super().__init__()
         self.model = timm.create_model(name, pretrained=from_pretrained)
+        # damn ...
+        try:
+            self.model.head = nn.Linear(self.model.head.in_features, num_classes)
+        except:
+            self.model.fc = nn.Linear(self.model.fc.in_features, num_classes)
+
+    def forward(self, x):
+        x = self.model(x)
+        return x
+
+
+class TorchHubModel(nn.Module):
+    """Some Information about TorchHubModel"""
+
+    def __init__(
+        self,
+        num_classes,
+        repo="facebookresearch/deit:main",
+        name="deit_base_patch16_224",
+        from_pretrained=True,
+        freeze_backbone=False,
+    ):
+        super().__init__()
+        self.model = torch.hub.load(
+            repo, name, pretrained=from_pretrained, force_reload=True
+        )
+        # import pdb
+
+        # pdb.set_trace()
+
         # damn ...
         try:
             self.model.head = nn.Linear(self.model.head.in_features, num_classes)
