@@ -63,7 +63,7 @@ class DeitModel(nn.Module):
         self, num_classes, model, from_pretrained=True, freeze_backbone=False,
     ):
         super().__init__()
-        self.model = getter.get_instance(model)
+        self.model = getter.get_instance(model, pretrained=from_pretrained)
         try:
             self.model.head = nn.Linear(self.model.head.in_features, num_classes)
         except:
