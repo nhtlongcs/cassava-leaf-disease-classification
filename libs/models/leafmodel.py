@@ -4,7 +4,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 assert timm.__version__ == "0.3.2"
-
+from externals import *
+from utils import getter
 from .extractors import EfficientNetExtractor
 
 
@@ -55,26 +56,14 @@ class BaseTimmModel(nn.Module):
         return x
 
 
-class TorchHubModel(nn.Module):
-    """Some Information about TorchHubModel"""
+class DeitModel(nn.Module):
+    """Some Information about DeitModel"""
 
     def __init__(
-        self,
-        num_classes,
-        repo="facebookresearch/deit:main",
-        name="deit_base_patch16_224",
-        from_pretrained=True,
-        freeze_backbone=False,
+        self, num_classes, model, from_pretrained=True, freeze_backbone=False,
     ):
         super().__init__()
-        self.model = torch.hub.load(
-            repo, name, pretrained=from_pretrained, force_reload=True
-        )
-        # import pdb
-
-        # pdb.set_trace()
-
-        # damn ...
+        self.model = getter.get_instance(model)
         try:
             self.model.head = nn.Linear(self.model.head.in_features, num_classes)
         except:

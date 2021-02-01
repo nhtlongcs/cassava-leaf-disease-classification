@@ -9,6 +9,7 @@ from metrics import *
 from optimizers import *
 from dataloaders import *
 from schedulers import *
+from externals import *
 
 
 def get_instance(config, **kwargs):

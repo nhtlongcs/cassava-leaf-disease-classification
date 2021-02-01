@@ -1,10 +1,11 @@
 id:                             deit
 pretrained:                     Null
 model:
-    name:                       TorchHubModel
+    name:                       DeitModel
     args:
-        repo:                   facebookresearch/deit:main
-        name:                   deit_base_patch16_224
+        model:
+            name:               deit_base_patch16_224
+
         num_classes:            5
         freeze_backbone:        False
         from_pretrained:        True 
@@ -34,7 +35,7 @@ dataset:
         args:
             data_dir:           data/train_images/         
             csv_path:           lists/train.csv
-            IMG_SIZE:           512
+            IMG_SIZE:           224
             is_train:           True  
         loader:
             name: DataLoader
@@ -47,7 +48,7 @@ dataset:
         args:
             data_dir:           data/train_images/         
             csv_path:           lists/val.csv
-            IMG_SIZE:           512
+            IMG_SIZE:           224
             is_train:           False  
         loader:
             name: DataLoader
