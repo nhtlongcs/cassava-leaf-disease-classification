@@ -1,0 +1,61 @@
+id:                             densenet121
+pretrained:                     Null
+model:
+    name:                       BaseTimmModel
+    args:
+        name:                   densenet121
+        num_classes:            5
+        freeze_backbone:        False
+        from_pretrained:        True 
+
+optimizer:
+    name:                       Adam
+    args:
+        lr:                     0.0001
+loss:
+    name:                       FocalLoss  
+    args:                       Null
+metric:
+    -   name:                   Accuracy
+        args:                   Null
+scheduler:
+    name:                       StepLR
+    args:
+        step_size:              3
+        gamma:                  0.2
+        last_epoch:             -1  
+dataset:
+    num_folds:                  5
+    folds_train_dir:            lists/folds/train/
+    folds_test_dir:             lists/folds/val/
+    train:
+        name:                   LeafDatasetAdvance
+        args:
+            data_dir:           data/train_images/         
+            csv_path:           lists/train.csv
+            IMG_SIZE:           512
+            is_train:           True  
+        loader:
+            name: DataLoader
+            args:
+                batch_size:     16
+                shuffle:        True
+                drop_last:      True 
+    val:
+        name:                   LeafDatasetAdvance
+        args:
+            data_dir:           data/train_images/         
+            csv_path:           lists/val.csv
+            IMG_SIZE:           512
+            is_train:           False  
+        loader:
+            name: DataLoader
+            args:
+                batch_size:     16
+                shuffle:        True
+
+trainer: 
+    TTA_times: 5
+    nepochs: 10
+    val_step: 1
+    log_step: 1
