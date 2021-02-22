@@ -1,9 +1,9 @@
-id:                             ViTTempered
+id:                             
 pretrained:                     Null
 model:
-    name:                       BaseTimmModel
+    name:                       BaseModel
     args:
-        name:                   vit_base_patch16_224
+        version:                4
         num_classes:            5
         freeze_backbone:        False
 optimizer:
@@ -11,47 +11,42 @@ optimizer:
     args:
         lr:                     0.0001
 loss:
-    name:                       BiTemperedLoss
-    args:                      
-        t1:                     0.2
-        t2:                     4.0
+    name:                       FocalLoss
+    args:                       Null
 metric:
     -   name:                   Accuracy
         args:                   Null
 scheduler:
     name:                       StepLR
     args:
-        step_size:              2
+        step_size:              3
         gamma:                  0.2
-        last_epoch:             -1
+        last_epoch:             -1  
 dataset:
-    num_folds:                  2
-    folds_train_dir:            lists/folds/train/
-    folds_test_dir:             lists/folds/val/
     train:
-        name:                   LeafDataset
+        name:                   LeafDatasetAdvance
         args:
             data_dir:           data/train_images/         
             csv_path:           lists/train.csv
-            IMG_SIZE:           224
+            IMG_SIZE:           512
             is_train:           True  
         loader:
             name: DataLoader
             args:
-                batch_size:     2
+                batch_size:     16
                 shuffle:        True
-                drop_last:      True 
+                drop_last:      False 
     val:
-        name:                   LeafDataset
+        name:                   LeafDatasetAdvance
         args:
             data_dir:           data/train_images/         
             csv_path:           lists/val.csv
-            IMG_SIZE:           224
+            IMG_SIZE:           512
             is_train:           False  
         loader:
             name: DataLoader
             args:
-                batch_size:     2
+                batch_size:     16
                 shuffle:        True
 
 trainer: 
