@@ -1,0 +1,10 @@
+torchnet
+efficientnet_pytorch
+torchsummary
+timm==0.3.2
+opencv-python
+albumentations
+kaggle
+pyyaml 
+tensorboard
+tqdm
