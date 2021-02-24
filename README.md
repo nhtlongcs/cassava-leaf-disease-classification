@@ -33,6 +33,7 @@ _**Quoted from contest decription.**_
 | Healthy|4|
 
 ![classes distribution](img/classes_distribution.png)
+> Credit: https://www.kaggle.com/foolofatook/starter-eda-cassava-leaf-disease
 
 ## To-do list
 
@@ -50,3 +51,38 @@ _**Quoted from contest decription.**_
 - [x] Implement Automatic Mixed Precision  
 - [x] Write Optuna scripts for hyperparams tuning  
 - [x] Evaluate classes distribution of public leaderboard test.  
+
+## Our approach
+
+### Summary
+
+The final model is a stacking of three CNN-based models, [EfficientNet](https://arxiv.org/abs/1905.11946), [ResneXt](https://arxiv.org/abs/1611.05431) and [Densenet](https://arxiv.org/abs/1608.06993).
+
+![final_model](img/final_model.png)
+
+### Models
+Most models are from the [Timm library](https://github.com/rwightman/pytorch-image-models).
+
+#### resnext50_32x4d - [training config](src/configs/resnext.yaml)
+
+* Use pretrained weight: Yes
+* Freeze backbone: No
+* Input image size: 512
+* Batch size: 16
+* Number of training (max) epochs: 10
+
+#### efficientnet-b4 - [training config](src/configs/effnet.yaml)
+
+* Use pretrained weight: Yes
+* Freeze backbone: No
+* Input image size: 512
+* Batch size: 16
+* Number of training (max) epochs: 10
+
+#### densenet121 - [training config](src/configs/densenet.yaml)
+
+* Use pretrained weight: Yes
+* Freeze backbone: No
+* Input image size: 512
+* Batch size: 16
+* Number of training (max) epochs: 10
