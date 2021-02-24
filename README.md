@@ -119,6 +119,6 @@ Stacking notebook: [![Open In Colab](https://colab.research.google.com/assets/co
 | 3    | 0.889460 | 0.316127      | 0.418937       | 0.264934        |
 | 4    | 0.899742 | 0.391536      | 0.344358       | 0.264104        |
 
-CV score: 0.894
-Public score: 0.897
-**Private score: 0.898**
+CV score: 0.894  
+Public score: 0.897  
+**Private score: 0.898**  
