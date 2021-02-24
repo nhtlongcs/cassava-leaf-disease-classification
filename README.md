@@ -38,7 +38,7 @@ _**Quoted from contest decription.**_
 ## To-do list
 
 - [x] Code baseline and trainer on GPU + TPU  
-- [x] Transforms: albumentations
+- [x] Transforms: [albumentations](https://github.com/albumentations-team/albumentations)
 - [x] Implement models: EfficientNet, ViT, Resnext 
 - [x] Implement losses: Focal loss, CrossEntropy loss, Bi-Tempered Loss  
 - [x] Implement optimizers: SAM  
