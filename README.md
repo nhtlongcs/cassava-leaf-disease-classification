@@ -74,6 +74,8 @@ Most models we used are from the [Timm library](https://github.com/rwightman/pyt
 
 * densenet121 - [training config](src/configs/densenet.yaml)
 
+**Result**
+
 | Model          | fold0    | fold8    | fold2    | fold3    | fold4    | CV       | Public | Private |
 |----------------|----------|----------|----------|----------|----------|----------|--------|---------|
 | densenet121    | 0.884346 | 0.881308 | 0.878710 | 0.873802 | 0.888993 | 0.881431 | 0.889  | **0.887**   |
@@ -110,6 +112,8 @@ Another Kaggle trick is to use [Test-time Augmentation](https://arxiv.org/abs/20
 Our stacked model was just a aggregation of weighted predictions of the level 1 models. We searched for those weights (using [Optuna](https://optuna.org/)) by optimizing for the local CV score.
 
 Stacking notebook: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/16pkbfXxpMhkNSbiMi29XUJrYzbNLs6VU?usp=sharing)
+
+**Result**
 
 | fold | accuracy | effnet_weight | resnext_weight | densenet_weight |
 |------|----------|---------------|----------------|-----------------|
