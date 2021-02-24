@@ -131,4 +131,4 @@ Public score: 0.897
 
 ![rank](img/ranking.JPG)
 
-Our score is at the top 8% (Bronze Medal) among 3900 teams.
+Our score is in the top 8% (Bronze Medal) among 3900 teams.
