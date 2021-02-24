@@ -13,6 +13,27 @@ Your task is to classify each cassava image into four disease categories or a fi
 
 _**Quoted from contest decription.**_
 
+## Dataset
+
+![Sample images](img/sample_images.jpg)
+
+**Train set**: 21,367 images.  
+**Test set**: ~15,000 images.  
+**Public test**: 31% of the test set.  
+**Private test**: 69% of the test set.
+ 
+**Classes mapping**
+
+|  Class | Numeric label|
+|---|---|
+| Cassava Bacterial Blight (CBB)  | 0 |
+| Cassava Brown Streak Disease (CBSD)  |  1 | 
+|  Cassava Green Mottle (CGM)  | 2  |
+|Cassava Mosaic Disease (CMD) |3 |
+| Healthy|4|
+
+![classes distribution](img/classes_distribution.png)
+
 ## To-do list
 
 - [x] Code baseline and trainer on GPU + TPU  
