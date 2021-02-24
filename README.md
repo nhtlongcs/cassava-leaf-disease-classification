@@ -126,3 +126,9 @@ Stacking notebook: [![Open In Colab](https://colab.research.google.com/assets/co
 CV score: 0.894  
 Public score: 0.897  
 **Private score: 0.898**  
+
+## Final result
+
+![rank](img/ranking.JPG)
+
+Our score is at the top 8% (Bronze Medal) among 3900 teams.
