@@ -113,7 +113,7 @@ Our stacked model was just a aggregation of weighted predictions of the level 1 
 
 Stacking notebook: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/16pkbfXxpMhkNSbiMi29XUJrYzbNLs6VU?usp=sharing)
 
-**Result**
+**Optimal weights**
 
 | fold | accuracy | effnet_weight | resnext_weight | densenet_weight |
 |------|----------|---------------|----------------|-----------------|
