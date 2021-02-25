@@ -127,6 +127,8 @@ CV score: 0.894
 Public score: 0.897  
 **Private score: 0.898**  
 
+[Submitted notebook](https://www.kaggle.com/kvu207/inference-notebook-ensembled)
+
 ## Final result
 
 ![rank](img/ranking.JPG)
