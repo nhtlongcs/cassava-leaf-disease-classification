@@ -137,8 +137,8 @@ Our score is in the top 8% (Bronze Medal) among 3900 teams.
 
 ### What we did not try (or did not work)
 
-* Vision Transformer models like [ViT](https://arxiv.org/abs/2010.11929) and [Deit](https://arxiv.org/abs/2012.12877). The CV and Public score of these two were not high (~0.83-ish) in this competition.
+* Vision Transformer models like [ViT](https://arxiv.org/abs/2010.11929) and [Deit](https://arxiv.org/abs/2012.12877). The CV and public score of these two were not high (~0.83-ish) in this competition.
 * Taylor Loss and Bi-Tempered Loss didn't improve the score, but they worked well for other teams.
 * SAM optimizer didn't work due to implementation bugs.
-* We could have produce a bigger training set using Generative models (GAN).
+* We could have produced a bigger training set using Generative models (GAN).
 * [Unsupervised Data Augmentation](https://arxiv.org/abs/1904.12848) seems cool but we didn't have time to try.
