@@ -30,31 +30,31 @@ dataset:
     train:
         name:                   LeafDatasetAdvance
         args:
-            data_dir:           data/train_images/         
+            data_dir:           data/train/       
             csv_path:           lists/train.csv
             IMG_SIZE:           512
             is_train:           True  
         loader:
             name: DataLoader
             args:
-                batch_size:     16
+                batch_size:     2
                 shuffle:        True
                 drop_last:      False 
     val:
         name:                   LeafDatasetAdvance
         args:
-            data_dir:           data/train_images/         
+            data_dir:           data/train/        
             csv_path:           lists/val.csv
             IMG_SIZE:           512
             is_train:           False  
         loader:
             name: DataLoader
             args:
-                batch_size:     16
+                batch_size:     2
                 shuffle:        True
 
 trainer: 
     TTA_times: 5
-    nepochs: 20
+    nepochs: 2
     val_step: 1
     log_step: 1

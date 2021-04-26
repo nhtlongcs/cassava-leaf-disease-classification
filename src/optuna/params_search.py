@@ -1,5 +1,6 @@
+import os
+os.chdir("..")
 import sys
-
 sys.path.append("./libs/")
 
 import argparse
@@ -103,7 +104,7 @@ def train(trial, config):
 		config=config,
 		model=model,
 		criterion=criterion,
-		optimier=optimizer,
+		optimizer=optimizer,
 		scheduler=scheduler,
 		metric=metric,
 	)
