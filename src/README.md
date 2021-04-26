@@ -119,4 +119,6 @@ Run commands below to to something
 ```bash
 $ python train_base.py --config configs/densenet.yaml --gpus 0 --fp16 --verbose
 ```
+## **Hyperparameters search**
 
+See [Optuna](optuna/).
