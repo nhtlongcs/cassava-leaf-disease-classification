@@ -73,12 +73,10 @@ def train(trial, config):
 	# 3: Define loss
 	set_seed()
 	criterion = get_instance(config["loss"]).to(device)
-	# criterion_name = trial.suggest_categorical("criterion", ["FocalLoss", "CrossEntropyLoss"])
-	# criterion = globals()[criterion_name]()
 
 	# 4: Define Optimizer
 	set_seed()
-	# optimizer_name = "Adam"
+	### Optuna ### 
 	optimizer_name = trial.suggest_categorical("optimizer", ["Adam", "RMSprop", "SGD"])
 	lr = trial.suggest_float("lr", low=0.0001, high=0.01, log=True)
 	weight_decay = trial.suggest_float("weight_decay", low=0, high=0.00001)
@@ -89,6 +87,7 @@ def train(trial, config):
 	# 5: Define Scheduler
 	set_seed()
 	scheduler_name = "StepLR"
+	### Optuna ### 
 	step_size = trial.suggest_int("step_size", low=1, high=5)
 	gamma = trial.suggest_float("gamma", low=0.1, high=0.5)
 	scheduler = globals()[scheduler_name](optimizer=optimizer, step_size=step_size, gamma=gamma, last_epoch=-1)
@@ -131,8 +130,10 @@ if __name__ == "__main__":
 	parser.add_argument("--fp16", action="store_true", default=False)
 	parser.add_argument("--fp16_opt_level", default="O2")
 	parser.add_argument("--debug", action="store_true")
-	parser.add_argument("--optuna_n_trials", default=1)
 	parser.add_argument("--verbose", action="store_true", default=False)
+
+	parser.add_argument("--optuna_n_trials", default=5)
+	parser.add_argument("--optuna_study_name")
 	args = parser.parse_args()
 	config_path = args.config
 	config = yaml.load(open(config_path, "r"), Loader=yaml.Loader)
@@ -143,7 +144,7 @@ if __name__ == "__main__":
 	config["verbose"] = args.verbose
 
 	# Create a study
-	study = optuna.create_study(direction="maximize", study_name="optuna_v0")
+	study = optuna.create_study(direction="maximize", study_name=args.optuna_study_name)
 	study.optimize(Objective(config), n_trials=int(args.optuna_n_trials))
 	print("Best trial:")
 	trial = study.best_trial
@@ -154,4 +155,4 @@ if __name__ == "__main__":
 	
 	# Save study
 	import joblib
-	joblib.dump(study, 'vit_optuna.pkl')
+	joblib.dump(study, f'{args.optuna_study_name}.pkl')
