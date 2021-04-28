@@ -1,5 +1,7 @@
 # 🌿Cassava Leaf Disease Classification 🌿
 ### Identify the type of disease present on a Cassava Leaf image
+[![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
+[![CodeFactor](https://www.codefactor.io/repository/github/nhtlongcs/cassava-leaf-disease-classification/badge)](https://www.codefactor.io/repository/github/nhtlongcs/cassava-leaf-disease-classification)
 
 [Contest website](https://www.kaggle.com/c/cassava-leaf-disease-classification/overview/description) 
 
