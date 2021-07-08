@@ -34,8 +34,8 @@ _**Quoted from contest decription.**_
 |Cassava Mosaic Disease (CMD) |3 |
 | Healthy|4|
 
-![classes distribution](img/classes_distribution.png)
-> Credit: https://www.kaggle.com/foolofatook/starter-eda-cassava-leaf-disease
+![classes distribution](img/classes_distribution.png)  
+Credit: https://www.kaggle.com/foolofatook/starter-eda-cassava-leaf-disease
 
 ## To-do list
 
